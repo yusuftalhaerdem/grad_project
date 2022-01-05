@@ -16,21 +16,21 @@ public class Main {
 
         //Data source
         FileOperation fileOperation = new FileOperation();
-        fileOperation.readCSV("data/data_12.csv");
+        fileOperation.readCSV("data/city_values_10.txt");
         ArrayList<ArrayList<Integer>> dataList= fileOperation.getDataList();
 
         //Global variables
-        double bestDistance = Double.MAX_VALUE;
+         double bestDistance = Double.MAX_VALUE;
         ArrayList<Integer> bestPath = new ArrayList<Integer>();
         //result
 
         ABC abc = new ABC();
         ArrayList<ArrayList<Double>> table = abc.makeDistanceTable(dataList);
         ArrayList<Bee> hive = abc.initializeHive(population, dataList);
-        hive = abc.assignRoles(hive, rolePercent, table, population);
+        hive = abc.assignRoles(hive, rolePercent, table, population, dataList);
 
         while (cycle<cycleLimit){
-            ReturnValues returnValues = abc.waggle(hive, bestDistance, table, foragerLimit, scoutCount);
+            ReturnValues returnValues = abc.waggle(hive, bestDistance, table, foragerLimit, scoutCount, dataList);
             if(returnValues.getBestDistance()<bestDistance){
                 bestDistance = returnValues.getBestDistance();
                 bestPath = new ArrayList<Integer>(returnValues.getBestPath());
@@ -45,5 +45,6 @@ public class Main {
             }
             cycle++;
         }
+        System.out.println("debug");
     }
 }

@@ -12,12 +12,24 @@ public class Bee {
     private String role;
     private ArrayList<Integer> path; //stores all nodes in each bee, will randomize foragers
     private double distance;
+    private double score;
     private int cycle; //number of iterations on current solution
+    private int numberOfVehiclesUsed;
+    private static int vehicleCapacity;
+
+    static {
+        vehicleCapacity = 25;
+    }
+
+    public static int getVehicleCapacity() {
+        return vehicleCapacity;
+    }
 
     public Bee(String role, ArrayList<Integer> path, int distance, int cycle) {
         this.role = role;
         this.path = path;
         this.distance = distance;
         this.cycle = cycle;
+        this.numberOfVehiclesUsed = 0;
     }
 }

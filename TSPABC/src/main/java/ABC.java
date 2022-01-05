@@ -37,31 +37,73 @@ public class ABC {
         }
 
         for(int i=0; i<population; i++){
-            hive.add(new Bee("", path, 0, 0 ));
+            hive.add(new Bee("", new ArrayList<>(path), 0, 0 ));
         }
 
         return hive;
     }
 
     public ArrayList<Bee> assignRoles(ArrayList<Bee> hive, ArrayList<Double> rolePercent,
-                                             ArrayList<ArrayList<Double>> table, int population){
+                                      ArrayList<ArrayList<Double>> table, int population,
+                                      ArrayList<ArrayList<Integer>> dataList){
         int onlookerCount = (int) (population * rolePercent.get(0));
         int foragerCount = (int) (population * rolePercent.get(1));
+        int scoutCount = 0;
+        //scoutCount = (int) (population * rolePercent.get(2));
 
-        for(int i = 0; i<onlookerCount; i++){
+        int i = 0;
+        for(; i<onlookerCount; i++){
             hive.get(i).setRole("O");
         }
-
-        for(int i= onlookerCount; i<onlookerCount+foragerCount; i++){
+        for(; i<onlookerCount+scoutCount; i++){
+            hive.get(i).setRole("S");
+        }
+        for(; i<onlookerCount+foragerCount+scoutCount; i++){
             hive.get(i).setRole("F");
-            ArrayList<Integer> tempPath= new ArrayList<>(hive.get(i).getPath());
 
-            Collections.shuffle(tempPath);
-            hive.get(i).setPath(tempPath);
+            // starts forager bees
+            foragerPath(hive.get(i), dataList );
+
             hive.get(i).setDistance(getTotalDistanceOfPath(hive.get(i).getPath(), table));
+            calculateScore(hive.get(i));
         }
 
+
+
         return hive;
+
+    }
+
+    private void calculateScore(Bee bee) {
+        double score= 3000;
+        score-= bee.getDistance();
+        score-= bee.getNumberOfVehiclesUsed()*1000;
+
+        // todo: make it more complex, it wont suffice with varying parameters
+        bee.setScore(score);
+    }
+
+    //gives random path to bee
+    private void foragerPath(Bee bee, ArrayList<ArrayList<Integer>> dataList) {
+        int vehicleCapacity= bee.getVehicleCapacity(); // TODO: we may find a better way to pass this value
+        int peopleInVehicle= 0;
+        int vehicleCount = 1;
+
+        ArrayList<Integer> path = bee.getPath();
+        path.removeIf(n -> (n==0)); //removes each base node
+        Collections.shuffle(bee.getPath()); // shuffles the collection
+
+        path.add(0,0);  //each path shall start at base node
+        for(int i =1 ; i<path.size(); i++){
+            int passengersAtStop = dataList.get(path.get(i)).get(3);
+            peopleInVehicle+= passengersAtStop;
+            if(peopleInVehicle > vehicleCapacity){ // if a vehicle is full, we start to new vehicle
+                path.add(i,0);
+                peopleInVehicle = 0;
+                vehicleCount++;
+            }
+        }
+        bee.setNumberOfVehiclesUsed(vehicleCount);
 
     }
 
@@ -97,14 +139,22 @@ public class ABC {
     }
 
     public ReturnValues waggle(ArrayList<Bee> hive, double bestDistance,
-                       ArrayList<ArrayList<Double>> table, int forager_limit, int scout_count){
+                       ArrayList<ArrayList<Double>> table, int forager_limit, int scout_count,
+                               ArrayList<ArrayList<Integer>> dataList){
 
         ArrayList<Integer> bestPath = new ArrayList<Integer>(), scouts = new ArrayList<Integer>();
         HashMap<Integer, Double> results= new HashMap<Integer, Double>();
 
         for (Bee bee : hive) {
             if (bee.getRole().equals("F")) {
-                ReturnValues returnValues = forage(bee, table, forager_limit);
+
+                foragerPath(bee, dataList);
+                bee.setDistance(getTotalDistanceOfPath(bee.getPath(),table));
+
+                // im not so sure what this is so lets keep it for a some more time
+                forage(bee, table,forager_limit);
+
+                ReturnValues returnValues = new ReturnValues(bee.getDistance(),bee.getPath());
                 if(returnValues.getBestDistance() < bestDistance){
                     bestDistance = returnValues.getBestDistance();
                     bestPath = new ArrayList<Integer>(returnValues.getBestPath());
@@ -116,7 +166,7 @@ public class ABC {
             }
         }
 
-        // after processing all bees, set worst performers to scout
+        // after processing all bees, set worst performers as scout
 
         List<Integer> mapKeys = new ArrayList<>(results.keySet());
         List<Double> mapValues = new ArrayList<>(results.values());
@@ -145,12 +195,12 @@ public class ABC {
     }
 
     public ReturnValues forage(Bee bee, ArrayList<ArrayList<Double>> table, int forager_limit ){
-        ArrayList<Integer> newPath = mutatePath(bee.getPath());
-        double newDistance = getTotalDistanceOfPath(newPath, table);
+        //ArrayList<Integer> newPath = mutatePath(bee.getPath());
 
-        if(newDistance<bee.getDistance()){
-            bee.setPath(newPath);
-            bee.setDistance(newDistance);
+
+        if(bee.getDistance()<bee.getDistance()){
+            bee.setPath(bee.getPath());
+            bee.setDistance(bee.getDistance());
             bee.setCycle(0);
         }else{
             bee.setCycle(bee.getCycle()+1);
@@ -163,6 +213,141 @@ public class ABC {
         return new ReturnValues(bee.getDistance(), bee.getPath());
     }
 
+    // delete
+    private void randomizePath(Bee bee) {
+        ArrayList<Integer> path = bee.getPath();
+
+
+
+    }
+
+
+
+    // merges paths
+    private ArrayList<Integer> mergePaths(ArrayList<ArrayList<Integer>> paths) {
+        ArrayList<Integer> path = new ArrayList<>();
+        for(int i =0; i< paths.size();i++){
+            path.add(0);
+            path.addAll(paths.get(i));
+        }
+        return path;
+    }
+
+    // separates paths
+    private ArrayList<ArrayList<Integer>> separatePaths(ArrayList<Integer> path) {
+        ArrayList<ArrayList<Integer>> paths = new ArrayList<>();
+
+        ArrayList<Integer> partialPath = new ArrayList<>();
+        // first we divide the paths
+        for(int i = 1; i< path.size();i++){
+            if(path.get(i) == 0){
+                paths.add(partialPath);
+                partialPath = new ArrayList<>();
+            }else{
+                partialPath.add(path.get(i));
+            }
+        }
+        paths.add(partialPath);
+        return paths;
+    }
+
+    // single node swapping
+    private void swapPath(Bee bee) {
+        ArrayList<Integer> path = bee.getPath();
+        ArrayList<ArrayList<Integer>> paths = separatePaths(path);
+
+
+        for(int i= 0; i <paths.size(); i++){
+
+            // each path has a chance to have a swap operation
+            int random = ThreadLocalRandom.current().nextInt(0, 2);
+
+            if(random == 1 && paths.get(i).size()>1 ){
+                // removes a value from arraylist and adds it to another location
+                int numberToSwap= paths.get(i).remove(ThreadLocalRandom.current().nextInt(0, paths.get(i).size()));
+                int replaceLocation = ThreadLocalRandom.current().nextInt(0, paths.get(i).size());
+
+                paths.get(i).add(replaceLocation, numberToSwap);
+            }
+        }
+
+
+        // gives new path to bee
+        path = mergePaths(paths);
+        bee.setPath(path);
+
+    }
+
+    // multi node swapping
+    private void relocatePath(Bee bee) {
+        // we may improve this function to choose longer strings to swap
+
+        ArrayList<Integer> path = bee.getPath();
+
+        ArrayList<ArrayList<Integer>> paths = separatePaths(path);
+
+        for(int i= 0; i <paths.size(); i++){
+
+            // each path has a chance to have a swap operation
+            int random = ThreadLocalRandom.current().nextInt(0, 2);
+
+            if(random == 1){
+                // removes a value from arraylist and adds it to another location
+                int swapStartPoint= ThreadLocalRandom.current().nextInt(0, paths.get(i).size());
+                int swapSize = ThreadLocalRandom.current().nextInt(0, paths.get(i).size() - swapStartPoint+1);
+                int relocationPoint = ThreadLocalRandom.current().nextInt(0, paths.get(i).size() - swapSize+1);
+
+                // removes nodes one by one and adds them into listToSwap arrayList
+                ArrayList<Integer> listToSwap = new ArrayList<>();
+                for(int currentSwap = 0 ; currentSwap<swapSize; currentSwap++){
+                    listToSwap.add(paths.get(i).remove(swapStartPoint));
+                }
+
+                // then adds all removed nodes into new location
+                paths.get(i).addAll(relocationPoint,listToSwap);
+
+            }
+        }
+
+        // gives new path to bee
+        path = mergePaths(paths);
+        bee.setPath(path);
+
+    }
+
+    // we may add the reversed string to a different location
+    private void reversePath(Bee bee) {
+        ArrayList<Integer> path = bee.getPath();
+        ArrayList<ArrayList<Integer>> paths = separatePaths(path);
+
+        //middleware
+        for(int i= 0; i <paths.size(); i++){
+            // each path has a chance to have a swap operation
+            int random = ThreadLocalRandom.current().nextInt(0, 2);
+
+            if(random == 1){
+                int reverseStart = ThreadLocalRandom.current().nextInt(0, paths.get(i).size());
+                int reverseAmount = ThreadLocalRandom.current().nextInt(0, paths.get(i).size()-reverseStart);
+                ArrayList<Integer> deletedNodes = new ArrayList<>();
+
+                // removes the nodes to be reversed from path
+                for(int j = 0; j<reverseAmount;j++){
+                    deletedNodes.add(paths.get(i).remove(reverseStart));
+                }
+                // then adds the removed nodes in reversed order
+                for(int j = 0; j<reverseAmount; j++){
+                    paths.get(i).add(reverseStart,deletedNodes.remove(0));
+                }
+
+            }
+        }
+
+
+
+        path = mergePaths(paths);
+        bee.setPath(path);
+    }
+
     public void scout(Bee bee, ArrayList<ArrayList<Double>> table){
         ArrayList<Integer> newPath = new ArrayList<Integer>(bee.getPath());
         Collections.shuffle(newPath);
@@ -172,11 +357,6 @@ public class ABC {
         bee.setCycle(0);
     }
 
-    public ArrayList<Integer> mutatePath(ArrayList<Integer> path){
-        int randomNum = ThreadLocalRandom.current().nextInt(0, path.size()-2);
-        Collections.swap(path, randomNum, randomNum+1);
-        return path;
-    }
 
     public void printDetails(int cycle, ArrayList<Integer> bestPath, double bestDistance, String role){
 
@@ -187,19 +367,36 @@ public class ABC {
     public ReturnValues recruit(ArrayList<Bee> hive, double bestDistance,
                                 ArrayList<Integer> bestPath, ArrayList<ArrayList<Double>> table) {
 
-        double newDistance = 0;
-        ArrayList<Integer> newPath;
+        double newDistance;
 
         for (Bee bee : hive) {
+
+            bee.setPath(bestPath);
+
             if (bee.getRole().equals("O")) {
-                newPath = mutatePath(bestPath);
-                newDistance = getTotalDistanceOfPath(newPath, table);
-                if (newDistance < bestDistance) {
+
+                int random = ThreadLocalRandom.current().nextInt(0, 3);
+                //mutation functions
+                if(random==0)
+                    swapPath(bee);
+                else if(random==1)
+                    relocatePath(bee);
+                else if(random==2)
+                    reversePath(bee);
+
+                newDistance = getTotalDistanceOfPath(bee.getPath(), table);
+
+                //bee.setPath(new ArrayList<>(newPath));
+                bee.setDistance(newDistance);
+
+                if (bee.getDistance() < bestDistance) {
                     bestDistance = newDistance;
-                    bestPath = newPath;
+                    bestPath = bee.getPath();
                 }
             }
         }
         return new ReturnValues(bestDistance, bestPath);
     }
+
+
 }

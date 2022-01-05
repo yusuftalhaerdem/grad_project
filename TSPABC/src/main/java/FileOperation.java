@@ -22,7 +22,7 @@ public class FileOperation {
         while (sc.hasNext())  //returns a boolean value
         {
             String next= sc.next();
-            String[] tempListString = next.split(",");
+            String[] tempListString = next.split(" ");
             ArrayList<Integer> tempListInt= new ArrayList<Integer>();
 
             for (String s : tempListString) {
