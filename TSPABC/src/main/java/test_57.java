@@ -118,7 +118,7 @@ public class test_57 {
                         testList.add(String.valueOf(currentPrint) + " " + String.valueOf(bestScores.get(0)));
                         System.out.println(String.valueOf(currentPrint) +" "+bestScores.get(0));
 
-
+/*
                         if(cycle % writeCycle == 0) {
                             int writeCycleNo = cycle / writeCycle;
                             String outputFileName =
@@ -133,16 +133,17 @@ public class test_57 {
                             scores.add(bestScores.get(0));
                             // break;
                         }
+
+ */
                     }
                 }
                 TestOut.fileWriter(
-                        "opt" + String.valueOf(opt) +
+                        "57 opt" + String.valueOf(opt) +
                                 " test" + String.valueOf(i)+
                                 " foragerPercent"+String.valueOf(foragerPercent)+
                                 " foragerCycleLimit"+String.valueOf(foragerCycleLimit)+
                                 " population"+String.valueOf(population)+
-                                " printCycles"+String.valueOf(printCycle)+
-                                " 57"+String.valueOf(fileName)
+                                " printCycles"+String.valueOf(printCycle)
                         , testList);
                 testList.clear();
                 Collections.sort(bestScores);

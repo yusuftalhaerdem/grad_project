@@ -174,7 +174,8 @@ public class ABC {
 
 
 
-        return Double.parseDouble(df.format(distance));
+        //return Double.parseDouble(df.format(distance));
+        return distance;
 
     }
 
