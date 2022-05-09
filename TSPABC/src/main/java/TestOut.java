@@ -36,7 +36,21 @@ public class TestOut {
             System.out.println("An error occurred.");
             e.printStackTrace();
         }
+    }
 
+    public static void pathWriter(String fileName, ArrayList<Integer> arrayList){
+        try {
+            FileWriter myWriter = new FileWriter(fileName+".txt");
+            //myWriter.flush();
+            for (Integer no : arrayList){
+                myWriter.write(String.valueOf(no)+" ");
+            }
+            myWriter.close();
+            System.out.println("Successfully wrote to the file.");
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
     }
 
     public static void main(String[] args) {

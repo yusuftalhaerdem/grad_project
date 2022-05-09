@@ -181,6 +181,7 @@ public class Main {
         System.out.println("average of those values are: "+ average);
     }
 
+
     /*
     private static void tsp_god(ArrayList<ArrayList<Double>> table, ArrayList<Integer> path, double distance, ArrayList<Integer> pathTaken) {
 

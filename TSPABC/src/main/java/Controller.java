@@ -3,72 +3,31 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 
-
-public class test_31 {
-    public static void main(String[] args) throws FileNotFoundException {
+public class Controller {
+    public static void wishing(int[] opts, int file_no, int printCycle, int cycleLimit, int population,
+                               double foragerPercentage,int foragerCycleLimit) throws FileNotFoundException {
 
         ArrayList<Double> scores= new ArrayList<Double>();
-
         ArrayList<String> testList= new ArrayList<>();
 
-        int[] opts = {0,1,2,3,4};       // check abc 427 for better understanding
 
-        String fileName = "data/optimized_31_city.txt";
+        String fileName = "data/optimized_"+String.valueOf(file_no)+"_city.txt";
+
+        double  onlookerPercent = 1-foragerPercentage; //, 3/7 is the best ratio
 
 
-
-        int CycleLimit = Integer.MAX_VALUE;
-        CycleLimit = 250000;
         //int printCount = 100;
-        int printCycle = 2500;
         int writeCycle = 250000;
 
         // for loop between different mutation types
         for (int opt = opts[0]; opt<=opts[opts.length-1];opt++) {
-/*
-            int foragerCycleLimit = 10;
-            for ( int forager_clc_opt =0; forager_clc_opt<5;forager_clc_opt++){
-                if( forager_clc_opt== 0){
-                    foragerCycleLimit = 10;
-                }else if( forager_clc_opt== 1){
-                    foragerCycleLimit = 50;
-                }else if( forager_clc_opt== 2){
-                    foragerCycleLimit = 100;
-                }else if( forager_clc_opt== 3){
-                    foragerCycleLimit = 500;
-                }else if( forager_clc_opt== 4){
-                    foragerCycleLimit = 1000;
-                }
-*/
-/*
-            int population = 100;
-            for (int population_option = 0; population_option<5;population_option++){
-                if(population_option == 0){
-                    population = 100;
-                }
-                else if(population_option == 1){
-                    population = 200;
-                }
-                else if (population_option== 2){
-                    population = 300;
-                }
-                else if (population_option== 3){
-                    population = 500;
-                }
-                else if (population_option== 4){
-                    population = 1000;
-                }
-                */
-            //double foragerPercent = 0.5, onlookerPercent = 0.5; //, 3/7 is the best ratio
 
             for (int i = 0; i < 10; i++) {
                 //Control Parameters
-                int population = 100;
-                double foragerPercent = 0.5, onlookerPercent = 0.5; //, 3/7 is the best ratio
                 //int scoutCount = (int) (population * scoutPercent);  15 69911.963  14 49752.703
-                int foragerCycleLimit = 500;
-                int cycleLimit = CycleLimit, cycle = 1;
-                ArrayList<Double> rolePercent = new ArrayList<>(Arrays.asList(onlookerPercent, foragerPercent));
+                int cycle = 1;
+
+                ArrayList<Double> rolePercent = new ArrayList<>(Arrays.asList(onlookerPercent, foragerPercentage));
 
                 //Data source
                 FileOperation fileOperation = new FileOperation();
@@ -121,9 +80,9 @@ public class test_31 {
                     }
                 }
                 TestOut.fileWriter(
-                        "31 opt" + String.valueOf(opt) +
+                        String.valueOf(file_no)+" opt" + String.valueOf(opt) +
                                 " test" + String.valueOf(i)+
-                                " foragerPercent"+String.valueOf(foragerPercent)+
+                                " foragerPercent"+String.valueOf(foragerPercentage)+
                                 " foragerCycleLimit"+String.valueOf(foragerCycleLimit)+
                                 " population"+String.valueOf(population)+
                                 " printCycles"+String.valueOf(printCycle)
@@ -133,9 +92,9 @@ public class test_31 {
                 scores.add(bestScores.get(0));
 
 
-                TestOut.pathWriter("path31 opt" + String.valueOf(opt) +
+                TestOut.pathWriter(String.valueOf(file_no)+"path opt" + String.valueOf(opt) +
                         " test" + String.valueOf(i)+
-                        " foragerPercent"+String.valueOf(foragerPercent)+
+                        " foragerPercent"+String.valueOf(foragerPercentage)+
                         " foragerCycleLimit"+String.valueOf(foragerCycleLimit)+
                         " population"+String.valueOf(population)+
                         " printCycles"+String.valueOf(printCycle),bestPaths.get(0)
@@ -156,5 +115,4 @@ public class test_31 {
         double average = total / scores.size();
         System.out.println("average of those values are: "+ average);
     }
-
 }
