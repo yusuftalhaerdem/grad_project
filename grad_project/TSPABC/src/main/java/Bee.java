@@ -18,7 +18,7 @@ public class Bee implements Comparable<Bee> {
     private static int vehicleCapacity;
 
     static {
-        vehicleCapacity = 27;
+        vehicleCapacity = 100;
     }
 
     public static int getVehicleCapacity() {
