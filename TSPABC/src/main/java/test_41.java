@@ -4,28 +4,16 @@ import java.util.Arrays;
 import java.util.Collections;
 
 
-public class Main {
+public class test_41 {
     public static void main(String[] args) throws FileNotFoundException {
 
         ArrayList<Double> scores= new ArrayList<Double>();
 
         ArrayList<String> testList= new ArrayList<>();
-        //ArrayList<Integer> opts_list = new ArrayList<Integer>();
 
-        // 11: 41714.906  12: 43642.979  13: 50327.554  14: 49752.703
-        /*
-        double best_score_10_nodes = 1;
-        double best_score_11_nodes = 1;
-        double best_score_12_nodes = 1;
-        double best_score_13_nodes = 1;
-        double best_score_14_nodes = 1;
-        double best_score_15_nodes = 1;
+        int[] opts = {0,1,2,3,4};       // check abc 427 for better understanding
 
-         */
-
-        int[] opts = {4};       // check abc 427 for better understanding
-
-        String fileName = "data/optimized_31_city.txt";
+        String fileName = "data/optimized_41_city.txt";
 
 
 
@@ -135,9 +123,9 @@ public class Main {
                             int writeCycleNo = cycle / writeCycle;
                             String outputFileName =
                                     "opt" + String.valueOf(opt) +
-                                    //" foragerCycleLimit"+ String.valueOf(foragerCycleLimit) +
-                                    " test"+String.valueOf(i)+
-                                    " write_cycle" + String.valueOf(writeCycleNo-1);
+                                            //" foragerCycleLimit"+ String.valueOf(foragerCycleLimit) +
+                                            " test"+String.valueOf(i)+
+                                            " write_cycle" + String.valueOf(writeCycleNo-1);
 
                             TestOut.fileWriter(outputFileName, testList);
                             testList.clear();
@@ -149,12 +137,12 @@ public class Main {
                 }
                 TestOut.fileWriter(
                         "opt" + String.valueOf(opt) +
-                        " test" + String.valueOf(i)+
-                        " foragerPercent"+String.valueOf(foragerPercent)+
-                        " foragerCycleLimit"+String.valueOf(foragerCycleLimit)+
-                        " population"+String.valueOf(population)+
-                        " printCycles"+String.valueOf(printCycle)+
-                        " file_name"+String.valueOf(fileName)
+                                " test" + String.valueOf(i)+
+                                " foragerPercent"+String.valueOf(foragerPercent)+
+                                " foragerCycleLimit"+String.valueOf(foragerCycleLimit)+
+                                " population"+String.valueOf(population)+
+                                " printCycles"+String.valueOf(printCycle)+
+                                " 41"+String.valueOf(fileName)
                         , testList);
                 testList.clear();
                 Collections.sort(bestScores);
