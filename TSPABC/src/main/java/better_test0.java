@@ -21,15 +21,11 @@ class MyThread extends Thread{
     }
     @Override
     public void run() {
-        System.out.println("works");
-        /*
         try {
             Controller.wishing(opts, file_no, printCycle, cycleLimit, population, foragerPercentage, foragerCycleLimit);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
-
-         */
     }
 
 }

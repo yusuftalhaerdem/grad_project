@@ -25,7 +25,8 @@ public class better_test1 extends Thread {
         // lets check
 
         for (int j : population_list) {
-            MyThread thread = new MyThread(opts, file_no, printCycle, cycleLimit, j, foragerPercentage, foragerCycleLimit);
+            int[] limited_opts = {4};       // check abc 427 for better understanding
+            MyThread thread = new MyThread(limited_opts, file_no, printCycle, cycleLimit, j, foragerPercentage, foragerCycleLimit);
             thread.start();
 
             Thread.sleep(waiting_time_milis); // // waits 10 second
@@ -38,6 +39,7 @@ public class better_test1 extends Thread {
 
             Thread.sleep(waiting_time_milis); // // waits 10 second
         }
+
 
 
 
