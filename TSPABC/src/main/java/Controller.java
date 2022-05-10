@@ -20,7 +20,7 @@ public class Controller {
         int writeCycle = 250000;
 
         // for loop between different mutation types
-        for (int opt = opts[0]; opt<=opts[opts.length-1];opt++) {
+        for (int opt : opts) {
 
             for (int i = 0; i < 10; i++) {
                 //Control Parameters

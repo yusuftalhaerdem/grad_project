@@ -11,7 +11,7 @@ public class test_57 {
 
         ArrayList<String> testList= new ArrayList<>();
 
-        int[] opts = {0,1,2,3,4};       // check abc 427 for better understanding
+        int[] opts = {4};       // check abc 427 for better understanding
 
         String fileName = "data/optimized_57_city.txt";
 

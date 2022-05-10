@@ -21,17 +21,23 @@ class MyThread extends Thread{
     }
     @Override
     public void run() {
+        System.out.println("works");
+        /*
         try {
             Controller.wishing(opts, file_no, printCycle, cycleLimit, population, foragerPercentage, foragerCycleLimit);
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
+
+         */
     }
 
 }
 public class better_test0 extends Thread {
     public static void main(String[] args) throws FileNotFoundException, InterruptedException {
 
+        // i just hope that i didnt modified this after testing :) yeah safety first reminder, mind safety
+        // todo: boolean not_changed_after_tests = true;
 
         // designed to check which parameters gives the best result
 
@@ -47,26 +53,33 @@ public class better_test0 extends Thread {
         int[] forager_cycle_limit_list = {10, 50, 100, 500, 1000};
         double[] forager_percentage_list = {0.3, 0.5, 0.7};
 
+        int waiting_time_milis= 5000;
+
 
         for (int j : population_list) {
             int cycleBalancer = j/population; // keeps the cycle count same
             MyThread thread = new MyThread(opts, file_no, printCycle/cycleBalancer,
                     cycleLimit/cycleBalancer, j, foragerPercentage, foragerCycleLimit);
+            System.out.println(String.valueOf(j));
             thread.start();
 
-            Thread.sleep(10000); // // waits 10 second
+            Thread.sleep(waiting_time_milis); // // waits 10 second
         }
         for (double j : forager_percentage_list) {
             MyThread thread = new MyThread(opts, file_no, printCycle, cycleLimit, population, j, foragerCycleLimit);
+            System.out.println(String.valueOf(j));
+
             thread.start();
 
-            Thread.sleep(10000); // // waits 10 second
+            Thread.sleep(waiting_time_milis); // // waits 10 second
         }
         for (int j : forager_cycle_limit_list) {
             MyThread thread = new MyThread(opts, file_no, printCycle, cycleLimit, population, foragerPercentage, j);
+            System.out.println(String.valueOf(j));
+
             thread.start();
 
-            Thread.sleep(10000); // // waits 10 second
+            Thread.sleep(waiting_time_milis); // // waits 10 second
         }
 
 
