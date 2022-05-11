@@ -1,0 +1,14 @@
+forager_cycle_limit= 10		728.9897942195258
+forager_cycle_limit= 50		701.1556850210064
+forager_cycle_limit= 100		691.3063542712699
+forager_cycle_limit= 500		683.4808483310966
+forager_cycle_limit= 1000		683.9807387053281
+forager_percentage_list= 0.3		683.7132560735943
+forager_percentage_list= 0.5		683.4808483310966
+forager_percentage_list= 0.7		688.7913181315535
+population= 100		683.4808483310966
+population= 200		684.1141035279237
+population= 300		686.3654881641414
+population= 500		684.7913375723847
+population= 1000		684.3965604646708
+total average: 691.0077713165905

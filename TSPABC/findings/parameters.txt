@@ -1,0 +1,14 @@
+default parameters:
+file_no = "31"
+printCycle = "2500"
+cycle_limit = "250000"
+population = "100"
+forager_percentage = "0.5"
+forager_cycle_limit = "500"
+opt = "4"
+
+optimum parameters:
+population = "100"
+forager_percentage = "0.3"
+forager_cycle_limit = "500"
+opt = "5"
