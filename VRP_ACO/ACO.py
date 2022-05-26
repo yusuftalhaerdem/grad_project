@@ -116,33 +116,34 @@ def VRP(n_iteration, alpha, beta, rho, number_of_ants, init_capacity, filename):
         # init ant locations
         ants_location, ants_capacity = initialize_ants(depot, number_of_ants, init_capacity)
         visited = np.zeros(n)
-
+        visited[0] = 1
         ant_completed = np.zeros(number_of_ants)
         '''
         if iteration > 0:
             pheromones = update_pheromones_rho(pheromones, n, rho)
         '''
 
-        for ant in range(number_of_ants):
-            while ant_completed[ant] == 0:
+        for ant_no in range(number_of_ants):
+            while ant_completed[ant_no] == 0:
                 # find current path and current node and feasible nodes
-                current_path = ants_location[ant]
+                current_path = ants_location[ant_no]
                 i = current_path[-1]
 
                 feasible_nodes = []
                 tmp_nodes = np.where(visited == 0)[0]
+
                 for node in tmp_nodes:
                     if dataList[node][3] == 0:
                         continue
-                    if ants_capacity[ant] > dataList[node][3]:
+                    if ants_capacity[ant_no] > dataList[node][3]:
                         feasible_nodes.append(node)
 
                 # print visibility[i][node]**beta
-                if len(feasible_nodes) > 1:
+                if len(tmp_nodes) > 1:
                     # calculate transitions
                     mult_values = np.zeros(len(dataList))
 
-                    for node in feasible_nodes:
+                    for node in tmp_nodes:
                         alpha_part = ((pheromones[i][node]) ** alpha)
                         beta_part = (visibility[i][node] ** beta)
                         mult_values[node] = ( alpha_part * beta_part )
@@ -158,8 +159,8 @@ def VRP(n_iteration, alpha, beta, rho, number_of_ants, init_capacity, filename):
                         print("")
 
                     p_transition = np.zeros(n)
-                    for j in range(n):
-                        if j in feasible_nodes:
+                    for j in range(1, n):
+                        if j in tmp_nodes:
                             p_transition[j] = mult_values[j] / sum_val  # nan oluyor
                             if math.isnan(p_transition[j]):
                                 print("debuggg3")
@@ -174,28 +175,38 @@ def VRP(n_iteration, alpha, beta, rho, number_of_ants, init_capacity, filename):
                             new_city = k
                             break
 
+                    if new_city not in feasible_nodes:
+                        ant_completed[ant_no] = 1
+                        ants_location[ant_no].append(depot)
+                        ant_distances[iteration][ant_no] = get_Lk(ants_location[ant_no], table)
+                        continue
+
 
                     visited[new_city] = 1
 
-                    ants_capacity[ant] -= dataList[new_city][3]
-                    ants_location[ant].append(new_city)
-                elif len(feasible_nodes) == 1:
+                    ants_capacity[ant_no] -= dataList[new_city][3]
+                    ants_location[ant_no].append(new_city)
+                elif len(tmp_nodes) == 1 and tmp_nodes[0] in feasible_nodes:
                     new_city = feasible_nodes[0]
                     visited[new_city] = 1
 
-                    ants_capacity[ant] -= dataList[new_city][3]
-                    ants_location[ant].append(new_city)
+                    ants_capacity[ant_no] -= dataList[new_city][3]
+                    ants_location[ant_no].append(new_city)
                 else:
-                    ant_completed[ant] = 1
-                    ants_location[ant].append(depot)
-                    ant_distances[iteration][ant] = get_Lk(ants_location[ant], table)
+                    ant_completed[ant_no] = 1
+                    ants_location[ant_no].append(depot)
+                    ant_distances[iteration][ant_no] = get_Lk(ants_location[ant_no], table)
 
-            if ant == 5:
+            if ant_no >= number_of_ants:
                 print("debug") # i really have no idea how we can reach here
-                ant = 4
+                ant_no = number_of_ants - 1
 
             # todo: bunu genel bir optimizasasyon şeyine çevirdim ama çok kötü gözüküyor
             #pheromones = update_ant_route_pheromone(pheromones, ants_location, n, table, ant)
+
+        if len(np.where(visited == 0)[0]) > 1:
+            print("there are some unvisited nodes.")
+            continue
 
         solution = dict()
         for ant in range(number_of_ants):
