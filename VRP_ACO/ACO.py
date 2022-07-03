@@ -43,6 +43,7 @@ def update_pheromones_rho(pheromones, n, rho):
             pheromones[i][j] = rho * pheromones[i][j]
     return pheromones
 
+
 # calculates the distance of ant_path
 def get_Lk(ant_location, distances):
     dist = 0.0
@@ -52,21 +53,22 @@ def get_Lk(ant_location, distances):
         dist += distances[i][j]
     return dist
 
+
 def update_pheromone_levels(pheromones, total_distance, n, ant_locs, ant_count, rho):
-    increase = (1/total_distance)
+    increase = (1 / total_distance)
     for ant_index in range(ant_count):
         ant_path = ant_locs[ant_index]
-        for index in range(len(ant_path)-1):
+        for index in range(len(ant_path) - 1):
             loc0 = ant_path[index]
-            loc1 = ant_path[index+1]
+            loc1 = ant_path[index + 1]
             pheromones[loc0][loc1] += increase
-
 
     for i in range(n):
         for j in range(n):
-                pheromones[i][j] *= rho
+            pheromones[i][j] *= rho
 
     return pheromones
+
 
 def update_ant_route_pheromone(pheromones, ants_location, n, distances, ant):
     ant_location = ants_location[ant]
@@ -99,9 +101,9 @@ def VRP(n_iteration, alpha, beta, rho, number_of_ants, init_capacity, filename):
     table = make_distance_table(dataList)
     n = len(dataList)
 
-    visibility = calculate_visibility(table, n) # 0.dan küçük değerler yapıyor visibi
+    visibility = calculate_visibility(table, n)
 
-    pheromones = np.zeros((n, n))   # yolların hepsine aynı feromon değeri veriyor total = 1
+    pheromones = np.zeros((n, n))
     pheromones_size = n ** 2
     for i in range(n):
         for j in range(n):
@@ -118,10 +120,6 @@ def VRP(n_iteration, alpha, beta, rho, number_of_ants, init_capacity, filename):
         visited = np.zeros(n)
         visited[0] = 1
         ant_completed = np.zeros(number_of_ants)
-        '''
-        if iteration > 0:
-            pheromones = update_pheromones_rho(pheromones, n, rho)
-        '''
 
         for ant_no in range(number_of_ants):
             while ant_completed[ant_no] == 0:
@@ -146,28 +144,25 @@ def VRP(n_iteration, alpha, beta, rho, number_of_ants, init_capacity, filename):
                     for node in tmp_nodes:
                         alpha_part = ((pheromones[i][node]) ** alpha)
                         beta_part = (visibility[i][node] ** beta)
-                        mult_values[node] = ( alpha_part * beta_part )
-
-
-
+                        mult_values[node] = (alpha_part * beta_part)
 
                     sum_val = 0
                     for mult_value in mult_values:
-                        sum_val += mult_value           # infinite oluyor
+                        sum_val += mult_value
 
                     if math.isinf(sum_val):
-                        print("")
+                        print("please use smaller values for dataset")
 
                     p_transition = np.zeros(n)
                     for j in range(1, n):
                         if j in tmp_nodes:
-                            p_transition[j] = mult_values[j] / sum_val  # nan oluyor
+                            p_transition[j] = mult_values[j] / sum_val
                             if math.isnan(p_transition[j]):
-                                print("debuggg3")
+                                print("some errors occurred in the code. please use smaller values.")
                         else:
                             p_transition[j] = 0
 
-                    # chooses new city, in a way similiar on our genom project
+                    # chooses new city, similiar to roulette selection
                     random_num = np.random.uniform(0, 1)
                     for k, prob in enumerate(p_transition):
                         random_num -= prob
@@ -180,7 +175,6 @@ def VRP(n_iteration, alpha, beta, rho, number_of_ants, init_capacity, filename):
                         ants_location[ant_no].append(depot)
                         ant_distances[iteration][ant_no] = get_Lk(ants_location[ant_no], table)
                         continue
-
 
                     visited[new_city] = 1
 
@@ -198,11 +192,7 @@ def VRP(n_iteration, alpha, beta, rho, number_of_ants, init_capacity, filename):
                     ant_distances[iteration][ant_no] = get_Lk(ants_location[ant_no], table)
 
             if ant_no >= number_of_ants:
-                print("debug") # i really have no idea how we can reach here
                 ant_no = number_of_ants - 1
-
-            # todo: bunu genel bir optimizasasyon şeyine çevirdim ama çok kötü gözüküyor
-            #pheromones = update_ant_route_pheromone(pheromones, ants_location, n, table, ant)
 
         if len(np.where(visited == 0)[0]) > 1:
             print("there are some unvisited nodes.")
@@ -215,14 +205,9 @@ def VRP(n_iteration, alpha, beta, rho, number_of_ants, init_capacity, filename):
         totalDistance = sum(solution.keys())
 
         pheromones = update_pheromone_levels(pheromones, totalDistance, n, ants_location, number_of_ants, rho)
-        '''
-        if totalDistance < 35284.14416797062:
-            print("gaga")
-        '''
 
         if totalDistance < best_distance:
             best_distance = totalDistance
             best_locs = ants_location
 
     return best_distance, best_locs
-
